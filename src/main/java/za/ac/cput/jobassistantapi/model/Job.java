@@ -1,19 +1,37 @@
 package za.ac.cput.jobassistantapi.model;
 
+import jakarta.persistence.*;
 import za.ac.cput.jobassistantapi.model.enums.JobSource;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "jobs")
 public class Job {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String externalId;
+
+    @Column(nullable = false)
     private String title;
+
     private String company;
+
+    @Lob
     private String description;
+
     private String location;
+
+    @Enumerated(EnumType.STRING)
     private JobSource source;
+
     private LocalDateTime fetchedAt;
+
+    protected Job() {}
 
     private Job(Builder builder) {
         this.id = builder.id;
@@ -24,6 +42,11 @@ public class Job {
         this.location = builder.location;
         this.source = builder.source;
         this.fetchedAt = builder.fetchedAt;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.fetchedAt = LocalDateTime.now();
     }
 
     public Long getId() {

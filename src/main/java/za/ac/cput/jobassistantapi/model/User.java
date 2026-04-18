@@ -1,14 +1,27 @@
 package za.ac.cput.jobassistantapi.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String passwordHash;
+
     private String fullName;
+
     private LocalDateTime createdAt;
+
+    protected User() {}
 
     private User(Builder builder) {
         this.id = builder.id;
@@ -16,6 +29,13 @@ public class User {
         this.passwordHash = builder.passwordHash;
         this.fullName = builder.fullName;
         this.createdAt = builder.createdAt;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
     }
 
     public Long getId() {

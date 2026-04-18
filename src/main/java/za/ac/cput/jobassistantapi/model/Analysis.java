@@ -1,24 +1,41 @@
 package za.ac.cput.jobassistantapi.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "analysis")
 public class Analysis {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long jobId;
-    private Long jobApplicationId; // nullable
-    private Long cvId;
+
+    @ManyToOne(optional = false)
+    private JobApplication jobApplication;
+
+    @ManyToOne(optional = false)
+    private CV cv;
+
     private Integer matchScore;
+
+    @Lob
     private String missingSkills;
+
+    @Lob
     private String aiSuggestions;
+
+    @Lob
     private String strengths;
+
     private LocalDateTime createdAt;
+
+    protected Analysis() {}
 
     private Analysis(Builder builder) {
         this.id = builder.id;
-        this.jobId = builder.jobId;
-        this.jobApplicationId = builder.jobApplicationId;
-        this.cvId = builder.cvId;
+        this.jobApplication = builder.jobApplication;
+        this.cv = builder.cv;
         this.matchScore = builder.matchScore;
         this.missingSkills = builder.missingSkills;
         this.aiSuggestions = builder.aiSuggestions;
@@ -26,20 +43,21 @@ public class Analysis {
         this.createdAt = builder.createdAt;
     }
 
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public Long getJobId() {
-        return jobId;
+    public JobApplication getJobApplication() {
+        return jobApplication;
     }
 
-    public Long getJobApplicationId() {
-        return jobApplicationId;
-    }
-
-    public Long getCvId() {
-        return cvId;
+    public CV getCv() {
+        return cv;
     }
 
     public Integer getMatchScore() {
@@ -64,9 +82,8 @@ public class Analysis {
 
     public static class Builder {
         private Long id;
-        private Long jobId;
-        private Long jobApplicationId;
-        private Long cvId;
+        private JobApplication jobApplication;
+        private CV cv;
         private Integer matchScore;
         private String missingSkills;
         private String aiSuggestions;
@@ -78,18 +95,13 @@ public class Analysis {
             return this;
         }
 
-        public Builder setJobId(Long jobId) {
-            this.jobId = jobId;
+        public Builder setJobApplication(JobApplication jobApplication) {
+            this.jobApplication = jobApplication;
             return this;
         }
 
-        public Builder setJobApplicationId(Long jobApplicationId) {
-            this.jobApplicationId = jobApplicationId;
-            return this;
-        }
-
-        public Builder setCvId(Long cvId) {
-            this.cvId = cvId;
+        public Builder setCv(CV cv) {
+            this.cv = cv;
             return this;
         }
 
@@ -120,9 +132,8 @@ public class Analysis {
 
         public Builder copy(Analysis analysis) {
             this.id = analysis.id;
-            this.jobId = analysis.jobId;
-            this.jobApplicationId = analysis.jobApplicationId;
-            this.cvId = analysis.cvId;
+            this.jobApplication = analysis.jobApplication;
+            this.cv = analysis.cv;
             this.matchScore = analysis.matchScore;
             this.missingSkills = analysis.missingSkills;
             this.aiSuggestions = analysis.aiSuggestions;

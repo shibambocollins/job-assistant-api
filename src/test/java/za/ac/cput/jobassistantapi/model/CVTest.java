@@ -2,8 +2,6 @@ package za.ac.cput.jobassistantapi.model;
 
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -20,7 +18,6 @@ class CVTest {
                 .setOriginalFilename("cv.pdf")
                 .setExtractedText("Java Spring Boot Developer")
                 .setSkillsJson("{\"skills\": [\"Java\", \"Spring\"]}")
-                .setUploadedAt(LocalDateTime.now())
                 .build();
     }
 
@@ -28,7 +25,6 @@ class CVTest {
     @Order(1)
     void build() {
         assertNotNull(cv);
-        System.out.println(cv);
     }
 
     @Test
@@ -51,7 +47,6 @@ class CVTest {
                 .setOriginalFilename("updated_cv.pdf")
                 .build();
 
-        assertNotNull(copied);
         assertEquals("updated_cv.pdf", copied.getOriginalFilename());
     }
 }

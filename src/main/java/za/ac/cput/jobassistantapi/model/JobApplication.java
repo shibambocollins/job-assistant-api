@@ -1,38 +1,58 @@
 package za.ac.cput.jobassistantapi.model;
 
+import jakarta.persistence.*;
 import za.ac.cput.jobassistantapi.model.enums.ApplicationStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "job_applications")
 public class JobApplication {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
-    private Long jobId;
+
+    @ManyToOne(optional = false)
+    private User user;
+
+    @ManyToOne(optional = false)
+    private Job job;
+
+    @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
+
     private LocalDate appliedDate;
+
     private LocalDateTime createdAt;
+
+    protected JobApplication() {}
 
     private JobApplication(Builder builder) {
         this.id = builder.id;
-        this.userId = builder.userId;
-        this.jobId = builder.jobId;
+        this.user = builder.user;
+        this.job = builder.job;
         this.status = builder.status;
         this.appliedDate = builder.appliedDate;
         this.createdAt = builder.createdAt;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public Long getJobId() {
-        return jobId;
+    public Job getJob() {
+        return job;
     }
 
     public ApplicationStatus getStatus() {
@@ -49,8 +69,8 @@ public class JobApplication {
 
     public static class Builder {
         private Long id;
-        private Long userId;
-        private Long jobId;
+        private User user;
+        private Job job;
         private ApplicationStatus status;
         private LocalDate appliedDate;
         private LocalDateTime createdAt;
@@ -60,13 +80,13 @@ public class JobApplication {
             return this;
         }
 
-        public Builder setUserId(Long userId) {
-            this.userId = userId;
+        public Builder setUser(User user) {
+            this.user = user;
             return this;
         }
 
-        public Builder setJobId(Long jobId) {
-            this.jobId = jobId;
+        public Builder setJob(Job job) {
+            this.job = job;
             return this;
         }
 
@@ -87,8 +107,8 @@ public class JobApplication {
 
         public Builder copy(JobApplication app) {
             this.id = app.id;
-            this.userId = app.userId;
-            this.jobId = app.jobId;
+            this.user = app.user;
+            this.job = app.job;
             this.status = app.status;
             this.appliedDate = app.appliedDate;
             this.createdAt = app.createdAt;

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.*;
 import za.ac.cput.jobassistantapi.model.enums.ApplicationStatus;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,16 +11,31 @@ import static org.junit.jupiter.api.Assertions.*;
 class JobApplicationTest {
 
     private static JobApplication app;
+    private static User user;
+    private static Job job;
 
     @BeforeAll
     static void setUp() {
-        app = new JobApplication.Builder()
+
+        user = new User.Builder()
                 .setId(1L)
-                .setUserId(1L)
-                .setJobId(100L)
+                .setEmail("test@test.com")
+                .setPasswordHash("hashed")
+                .setFullName("Test User")
+                .build();
+
+        job = new Job.Builder()
+                .setId(100L)
+                .setTitle("Java Dev")
+                .setCompany("Google")
+                .setSource(za.ac.cput.jobassistantapi.model.enums.JobSource.MUSE)
+                .build();
+
+        app = new JobApplication.Builder()
+                .setUser(user)
+                .setJob(job)
                 .setStatus(ApplicationStatus.APPLIED)
                 .setAppliedDate(LocalDate.now())
-                .setCreatedAt(LocalDateTime.now())
                 .build();
     }
 
@@ -29,7 +43,6 @@ class JobApplicationTest {
     @Order(1)
     void build() {
         assertNotNull(app);
-        System.out.println(app);
     }
 
     @Test
@@ -40,8 +53,8 @@ class JobApplicationTest {
 
     @Test
     @Order(3)
-    void getJobId() {
-        assertEquals(100L, app.getJobId());
+    void getUser() {
+        assertEquals("test@test.com", app.getUser().getEmail());
     }
 
     @Test
@@ -52,7 +65,6 @@ class JobApplicationTest {
                 .setStatus(ApplicationStatus.INTERVIEW)
                 .build();
 
-        assertNotNull(copied);
         assertEquals(ApplicationStatus.INTERVIEW, copied.getStatus());
     }
 }

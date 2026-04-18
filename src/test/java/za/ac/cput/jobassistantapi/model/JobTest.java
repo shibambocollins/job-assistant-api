@@ -3,8 +3,6 @@ package za.ac.cput.jobassistantapi.model;
 import org.junit.jupiter.api.*;
 import za.ac.cput.jobassistantapi.model.enums.JobSource;
 
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -22,7 +20,6 @@ class JobTest {
                 .setDescription("Software Developer role")
                 .setLocation("Remote")
                 .setSource(JobSource.MUSE)
-                .setFetchedAt(LocalDateTime.now())
                 .build();
     }
 
@@ -30,7 +27,6 @@ class JobTest {
     @Order(1)
     void build() {
         assertNotNull(job);
-        System.out.println(job);
     }
 
     @Test
@@ -53,7 +49,6 @@ class JobTest {
                 .setCompany("Amazon")
                 .build();
 
-        assertNotNull(copied);
         assertEquals("Amazon", copied.getCompany());
     }
 }

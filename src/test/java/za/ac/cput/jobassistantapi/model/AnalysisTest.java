@@ -2,27 +2,53 @@ package za.ac.cput.jobassistantapi.model;
 
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AnalysisTest {
 
     private static Analysis analysis;
+    private static JobApplication app;
+    private static CV cv;
 
     @BeforeAll
     static void setUp() {
-        analysis = new Analysis.Builder()
+
+        User user = new User.Builder()
                 .setId(1L)
-                .setJobId(100L)
-                .setJobApplicationId(null)
-                .setCvId(10L)
+                .setEmail("test@test.com")
+                .setPasswordHash("hash")
+                .setFullName("Test User")
+                .build();
+
+        Job job = new Job.Builder()
+                .setId(100L)
+                .setTitle("Java Dev")
+                .setCompany("Google")
+                .setSource(za.ac.cput.jobassistantapi.model.enums.JobSource.MUSE)
+                .build();
+
+        app = new JobApplication.Builder()
+                .setUser(user)
+                .setJob(job)
+                .build();
+
+        cv = new CV.Builder()
+                .setId(10L)
+                .setUserId(1L)
+                .setBlobUrl("url")
+                .setOriginalFilename("cv.pdf")
+                .setExtractedText("Java dev")
+                .setSkillsJson("{Java}")
+                .build();
+
+        analysis = new Analysis.Builder()
+                .setJobApplication(app)
+                .setCv(cv)
                 .setMatchScore(75)
                 .setMissingSkills("Docker, Kubernetes")
-                .setAiSuggestions("Learn Docker and build projects")
-                .setStrengths("Strong Java and Spring Boot skills")
-                .setCreatedAt(LocalDateTime.now())
+                .setAiSuggestions("Learn Docker")
+                .setStrengths("Java + Spring")
                 .build();
     }
 
@@ -30,7 +56,6 @@ class AnalysisTest {
     @Order(1)
     void build() {
         assertNotNull(analysis);
-        System.out.println(analysis);
     }
 
     @Test
@@ -41,8 +66,8 @@ class AnalysisTest {
 
     @Test
     @Order(3)
-    void getMissingSkills() {
-        assertTrue(analysis.getMissingSkills().contains("Docker"));
+    void relationshipTest() {
+        assertEquals("Google", analysis.getJobApplication().getJob().getCompany());
     }
 
     @Test
@@ -50,10 +75,9 @@ class AnalysisTest {
     void copy() {
         Analysis copied = new Analysis.Builder()
                 .copy(analysis)
-                .setMatchScore(85)
+                .setMatchScore(90)
                 .build();
 
-        assertNotNull(copied);
-        assertEquals(85, copied.getMatchScore());
+        assertEquals(90, copied.getMatchScore());
     }
 }

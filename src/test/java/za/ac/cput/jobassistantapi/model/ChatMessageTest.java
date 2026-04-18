@@ -2,24 +2,29 @@ package za.ac.cput.jobassistantapi.model;
 
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ChatMessageTest {
 
     private static ChatMessage message;
+    private static User user;
 
     @BeforeAll
     static void setUp() {
-        message = new ChatMessage.Builder()
+
+        user = new User.Builder()
                 .setId(1L)
-                .setUserId(1L)
+                .setEmail("test@test.com")
+                .setPasswordHash("hash")
+                .setFullName("Test User")
+                .build();
+
+        message = new ChatMessage.Builder()
+                .setUser(user)
                 .setUserMessage("Which job suits me best?")
                 .setAiResponse("You are best suited for backend roles.")
                 .setContextSnapshot("CV: Java, Spring | Jobs: Backend roles")
-                .setSentAt(LocalDateTime.now())
                 .build();
     }
 
@@ -27,7 +32,6 @@ class ChatMessageTest {
     @Order(1)
     void build() {
         assertNotNull(message);
-        System.out.println(message);
     }
 
     @Test
@@ -44,13 +48,18 @@ class ChatMessageTest {
 
     @Test
     @Order(4)
+    void relationshipTest() {
+        assertEquals("test@test.com", message.getUser().getEmail());
+    }
+
+    @Test
+    @Order(5)
     void copy() {
         ChatMessage copied = new ChatMessage.Builder()
                 .copy(message)
                 .setUserMessage("Updated question")
                 .build();
 
-        assertNotNull(copied);
         assertEquals("Updated question", copied.getUserMessage());
     }
 }

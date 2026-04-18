@@ -1,16 +1,33 @@
 package za.ac.cput.jobassistantapi.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "cv")
 public class CV {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private Long userId;
+
+    @Column(nullable = false)
     private String blobUrl;
+
     private String originalFilename;
+
+    @Lob
     private String extractedText;
+
+    @Lob
     private String skillsJson;
+
     private LocalDateTime uploadedAt;
+
+    protected CV() {}
 
     private CV(Builder builder) {
         this.id = builder.id;
@@ -20,6 +37,11 @@ public class CV {
         this.extractedText = builder.extractedText;
         this.skillsJson = builder.skillsJson;
         this.uploadedAt = builder.uploadedAt;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.uploadedAt = LocalDateTime.now();
     }
 
     public Long getId() {

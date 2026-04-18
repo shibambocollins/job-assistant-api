@@ -1,31 +1,52 @@
 package za.ac.cput.jobassistantapi.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "chat_messages")
 public class ChatMessage {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
+
+    @ManyToOne(optional = false)
+    private User user;
+
+    @Lob
     private String userMessage;
+
+    @Lob
     private String aiResponse;
-    private String contextSnapshot; // optional
+
+    @Lob
+    private String contextSnapshot;
+
     private LocalDateTime sentAt;
+
+    protected ChatMessage() {}
 
     private ChatMessage(Builder builder) {
         this.id = builder.id;
-        this.userId = builder.userId;
+        this.user = builder.user;
         this.userMessage = builder.userMessage;
         this.aiResponse = builder.aiResponse;
         this.contextSnapshot = builder.contextSnapshot;
         this.sentAt = builder.sentAt;
     }
 
+    @PrePersist
+    public void onCreate() {
+        this.sentAt = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public String getUserMessage() {
@@ -45,8 +66,9 @@ public class ChatMessage {
     }
 
     public static class Builder {
+
         private Long id;
-        private Long userId;
+        private User user;
         private String userMessage;
         private String aiResponse;
         private String contextSnapshot;
@@ -57,8 +79,8 @@ public class ChatMessage {
             return this;
         }
 
-        public Builder setUserId(Long userId) {
-            this.userId = userId;
+        public Builder setUser(User user) {
+            this.user = user;
             return this;
         }
 
@@ -84,7 +106,7 @@ public class ChatMessage {
 
         public Builder copy(ChatMessage message) {
             this.id = message.id;
-            this.userId = message.userId;
+            this.user = message.user;
             this.userMessage = message.userMessage;
             this.aiResponse = message.aiResponse;
             this.contextSnapshot = message.contextSnapshot;
