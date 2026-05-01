@@ -19,6 +19,10 @@ public class CVServiceImpl implements CVService {
     @Override
     public CVResponse uploadCV(CVUploadRequest request) {
 
+        if (cvRepository.findByUserId(request.getUserId()).isPresent()) {
+            throw new RuntimeException("User already has a CV. Use update instead.");
+        }
+
         CV cv = new CV.Builder()
                 .setUserId(request.getUserId())
                 .setBlobUrl(request.getBlobUrl())
@@ -26,7 +30,6 @@ public class CVServiceImpl implements CVService {
                 .build();
 
         CV saved = cvRepository.save(cv);
-
         return new CVResponse(saved.getId(), "CV uploaded successfully");
     }
 }
