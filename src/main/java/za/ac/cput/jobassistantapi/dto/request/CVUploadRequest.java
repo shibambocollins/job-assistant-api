@@ -6,6 +6,18 @@ public class CVUploadRequest {
     private String blobUrl;
     private String originalFilename;
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setBlobUrl(String blobUrl) {
+        this.blobUrl = blobUrl;
+    }
+
+    public void setOriginalFilename(String originalFilename) {
+        this.originalFilename = originalFilename;
+    }
+
     public Long getUserId() {
         return userId;
     }
