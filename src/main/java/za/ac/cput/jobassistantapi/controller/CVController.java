@@ -1,6 +1,7 @@
 package za.ac.cput.jobassistantapi.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import za.ac.cput.jobassistantapi.dto.request.CVUploadRequest;
 import za.ac.cput.jobassistantapi.dto.response.CVResponse;
@@ -17,7 +18,12 @@ public class CVController {
     }
 
     @PostMapping
-    public ResponseEntity<CVResponse> uploadCV(@RequestBody CVUploadRequest request) {
-        return ResponseEntity.ok(cvService.uploadCV(request));
+    public ResponseEntity<CVResponse> uploadCV(
+            @RequestBody CVUploadRequest request,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                cvService.uploadCV(request, authentication.getName())
+        );
     }
 }

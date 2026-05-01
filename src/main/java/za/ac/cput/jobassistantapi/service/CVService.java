@@ -5,5 +5,5 @@ import za.ac.cput.jobassistantapi.dto.response.CVResponse;
 
 public interface CVService {
 
-    CVResponse uploadCV(CVUploadRequest request);
+    CVResponse uploadCV(CVUploadRequest request, String email);
 }
