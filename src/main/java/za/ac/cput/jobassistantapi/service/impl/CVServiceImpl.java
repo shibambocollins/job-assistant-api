@@ -3,11 +3,17 @@ package za.ac.cput.jobassistantapi.service.impl;
 import org.springframework.stereotype.Service;
 import za.ac.cput.jobassistantapi.dto.request.CVUploadRequest;
 import za.ac.cput.jobassistantapi.dto.response.CVResponse;
+import za.ac.cput.jobassistantapi.dto.response.CVUploadResponse;
 import za.ac.cput.jobassistantapi.model.CV;
 import za.ac.cput.jobassistantapi.model.User;
 import za.ac.cput.jobassistantapi.repository.CVRepository;
 import za.ac.cput.jobassistantapi.repository.UserRepository;
 import za.ac.cput.jobassistantapi.service.CVService;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 public class CVServiceImpl implements CVService {
@@ -40,5 +46,42 @@ public class CVServiceImpl implements CVService {
         CV saved = cvRepository.save(cv);
 
         return new CVResponse(saved.getId(), "CV uploaded successfully");
+    }
+
+    @Override
+    public CVUploadResponse uploadFile(MultipartFile file, String email) {
+
+        try {
+
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            String fileName =
+                    UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+            Path uploadPath = Paths.get("uploads");
+
+            Files.createDirectories(uploadPath);
+
+            Path filePath = uploadPath.resolve(fileName);
+
+            Files.copy(file.getInputStream(), filePath);
+
+            CV cv = new CV.Builder()
+                    .setUserId(user.getId())
+                    .setBlobUrl(filePath.toString())
+                    .setOriginalFilename(file.getOriginalFilename())
+                    .build();
+
+            CV saved = cvRepository.save(cv);
+
+            return new CVUploadResponse(
+                    saved.getId(),
+                    saved.getOriginalFilename()
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("File upload failed");
+        }
     }
 }
