@@ -50,4 +50,5 @@ public class CVController {
                 cvService.getCVByUserEmail(authentication.getName())
         );
     }
+
 }
