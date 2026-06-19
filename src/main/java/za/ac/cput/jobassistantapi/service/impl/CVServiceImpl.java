@@ -1,9 +1,11 @@
 package za.ac.cput.jobassistantapi.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import za.ac.cput.jobassistantapi.dto.request.CVUploadRequest;
 import za.ac.cput.jobassistantapi.dto.response.CVResponse;
 import za.ac.cput.jobassistantapi.dto.response.CVUploadResponse;
+import za.ac.cput.jobassistantapi.dto.response.SkillExtractionResult;
 import za.ac.cput.jobassistantapi.model.CV;
 import za.ac.cput.jobassistantapi.model.User;
 import za.ac.cput.jobassistantapi.repository.CVRepository;
@@ -55,11 +57,13 @@ public class CVServiceImpl implements CVService {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
 
-
             String extractedText = pdfExtractionService.extractText(file);
 
-            String skillsJson = "[]";
+            SkillExtractionResult skillResult =
+                    skillExtractionService.extract(extractedText);
 
+            String skillsJson = new ObjectMapper()
+                    .writeValueAsString(skillResult.getSkills());
 
             CV cv = new CV.Builder()
                     .setUserId(user.getId())
