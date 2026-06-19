@@ -9,6 +9,6 @@ import za.ac.cput.jobassistantapi.model.CV;
 public interface CVService {
 
     CVResponse uploadCV(CVUploadRequest request, String email);
-    CVUploadResponse uploadFile(MultipartFile file, String email);
+    //CVUploadResponse uploadFile(MultipartFile file, String email);
     CV getCVByUserEmail(String email);
 }

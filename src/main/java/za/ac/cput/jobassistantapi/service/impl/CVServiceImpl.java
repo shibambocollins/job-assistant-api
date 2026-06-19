@@ -41,18 +41,38 @@ public class CVServiceImpl implements CVService {
             throw new RuntimeException("User already has a CV");
         }
 
-        CV cv = new CV.Builder()
-                .setUserId(user.getId())
-                .setBlobUrl(request.getBlobUrl())
-                .setOriginalFilename(request.getOriginalFilename())
-                .build();
+        try {
+            // 1. Save file
+            String fileName =
+                    UUID.randomUUID() + "_" + request.getFile().getOriginalFilename();
 
-        CV saved = cvRepository.save(cv);
+            Path uploadPath = Paths.get("uploads");
+            Files.createDirectories(uploadPath);
 
-        return new CVResponse(saved.getId(), "CV uploaded successfully");
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(request.getFile().getInputStream(), filePath);
+
+            // 2. Extract text
+            String extractedText =
+                    pdfExtractionService.extractText(request.getFile());
+
+            // 3. Save CV entity
+            CV cv = new CV.Builder()
+                    .setUserId(user.getId())
+                    .setBlobUrl(filePath.toString())
+                    .setOriginalFilename(request.getFile().getOriginalFilename())
+                    .setExtractedText(extractedText)
+                    .build();
+
+            CV saved = cvRepository.save(cv);
+
+            return new CVResponse(saved.getId(), "CV uploaded successfully");
+
+        } catch (Exception e) {
+            throw new RuntimeException("CV upload failed: " + e.getMessage());
+        }
     }
-
-    @Override
+  /*  @Override
     public CVUploadResponse uploadFile(MultipartFile file, String email) {
 
         try {
@@ -87,7 +107,7 @@ public class CVServiceImpl implements CVService {
         } catch (Exception e) {
             throw new RuntimeException("File upload failed"+ e.getMessage());
         }
-    }
+    }*/
 
     @Override
     public CV getCVByUserEmail(String email) {
