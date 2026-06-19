@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import za.ac.cput.jobassistantapi.dto.request.CVUploadRequest;
 import za.ac.cput.jobassistantapi.dto.response.CVResponse;
 import za.ac.cput.jobassistantapi.dto.response.CVUploadResponse;
+import za.ac.cput.jobassistantapi.model.CV;
 import za.ac.cput.jobassistantapi.service.CVService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +41,13 @@ public class CVController {
                         file,
                         authentication.getName()
                 )
+        );
+    }
+
+    @GetMapping("/my-cv")
+    public ResponseEntity<CV> getMyCV(Authentication authentication) {
+        return ResponseEntity.ok(
+                cvService.getCVByUserEmail(authentication.getName())
         );
     }
 }

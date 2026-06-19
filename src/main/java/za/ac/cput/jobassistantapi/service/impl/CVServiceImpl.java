@@ -81,7 +81,17 @@ public class CVServiceImpl implements CVService {
             );
 
         } catch (Exception e) {
-            throw new RuntimeException("File upload failed");
+            throw new RuntimeException("File upload failed"+ e.getMessage());
         }
+    }
+
+    @Override
+    public CV getCVByUserEmail(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return cvRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("CV not found"));
     }
 }
