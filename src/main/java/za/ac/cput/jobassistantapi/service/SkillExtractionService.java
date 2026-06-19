@@ -1,7 +1,8 @@
 package za.ac.cput.jobassistantapi.service;
 
-import java.util.Set;
+import za.ac.cput.jobassistantapi.dto.response.SkillExtractionResult;
 
 public interface SkillExtractionService {
-    Set<String> extractSkills(String text);
+
+    SkillExtractionResult extract(String text);
 }

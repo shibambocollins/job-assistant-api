@@ -6,12 +6,12 @@ public class SkillDictionary {
 
     public static final Set<String> SKILLS = Set.of(
             "java",
+            "spring",
+            "spring boot",
             "python",
             "c#",
             "javascript",
             "typescript",
-            "spring boot",
-            "spring",
             "react",
             "node",
             "sql",
@@ -21,7 +21,7 @@ public class SkillDictionary {
             "docker",
             "html",
             "css",
-            "rest",
+            "rest api",
             "restful api"
     );
 }
