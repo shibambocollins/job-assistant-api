@@ -14,6 +14,7 @@ import za.ac.cput.jobassistantapi.service.CVService;
 import org.springframework.web.multipart.MultipartFile;
 import za.ac.cput.jobassistantapi.service.PdfExtractionService;
 import za.ac.cput.jobassistantapi.service.SkillExtractionService;
+import za.ac.cput.jobassistantapi.service.TextCleaningService;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,13 +29,15 @@ public class CVServiceImpl implements CVService {
     private final CVRepository cvRepository;
     private final PdfExtractionService pdfExtractionService;
     private final SkillExtractionService skillExtractionService;
+    private final TextCleaningService textCleaningService;
 
     public CVServiceImpl(CVRepository cvRepository,
-                         UserRepository userRepository, PdfExtractionService pdfExtractionService, SkillExtractionService skillExtractionService) {
+                         UserRepository userRepository, PdfExtractionService pdfExtractionService, SkillExtractionService skillExtractionService, TextCleaningService textCleaningService) {
         this.cvRepository = cvRepository;
         this.userRepository = userRepository;
         this.pdfExtractionService = pdfExtractionService;
         this.skillExtractionService = skillExtractionService;
+        this.textCleaningService = textCleaningService;
     }
 
     @Override
@@ -57,20 +60,19 @@ public class CVServiceImpl implements CVService {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath);
 
-            String extractedText = pdfExtractionService.extractText(file);
+            String rawText = pdfExtractionService.extractText(file);
+
+            String extractedText = textCleaningService.clean(rawText);
 
             SkillExtractionResult skillResult =
                     skillExtractionService.extract(extractedText);
-
-            String skillsJson = new ObjectMapper()
-                    .writeValueAsString(skillResult.getSkills());
 
             CV cv = new CV.Builder()
                     .setUserId(user.getId())
                     .setBlobUrl(filePath.toString())
                     .setOriginalFilename(file.getOriginalFilename())
                     .setExtractedText(extractedText)
-                    .setSkillsJson(skillsJson)
+                    //.setSkillsJson(skillsJson)
                     .build();
 
             CV saved = cvRepository.save(cv);
